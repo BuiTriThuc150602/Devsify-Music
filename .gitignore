@@ -1,0 +1,9 @@
+# exclude node_modules from bacend folder and frontend folder
+Backend/node_modules
+Frontend/DevsifyMusic/node_modules
+
+# exclude .vscode folder from frontend folder
+Frontend/DevsifyMusic/.vscode
+
+# exclude .env file
+Backend/.env
