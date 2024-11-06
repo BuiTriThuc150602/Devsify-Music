@@ -23,6 +23,7 @@
       "package": "com.buitrithuc.devsify"
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/icon.png"
     },
     "extra": {

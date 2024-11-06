@@ -2,20 +2,18 @@ import { Text, View, SafeAreaView, Pressable, Image } from "react-native";
 import React, { useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { Entypo } from "@expo/vector-icons";
-import banner from "../../assets/splash.png";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useRecoilValue } from "recoil";
 import { authenticationState } from "../RecoilState";
-import { useNavigation } from "@react-navigation/native";
-
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../stores/types/RootStackParamList";
 const LoginScreen = () => {
-  const { promptAsync } = useAuthContext();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const authentication = useRecoilValue(authenticationState);
+  const { promptAsync } = useAuthContext();
 
   useEffect(() => {
     console.log("LoginScreen", authentication);
-
     if (authentication && authentication.accessToken) {
       navigation.navigate("Main");
     } else {
@@ -28,7 +26,7 @@ const LoginScreen = () => {
       <SafeAreaView>
         <View className="h-1/2 justify-end">
           <Image
-            source={banner}
+            source={require("../../assets/icon.png")}
             className="w-full h-1/2"
             resizeMode="contain"
           />

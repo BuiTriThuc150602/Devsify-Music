@@ -1,11 +1,21 @@
+import React from "react";
 import { ResponseType, useAuthRequest } from "expo-auth-session";
 import { createContext, useContext, useEffect } from "react";
 import { config } from "../configs/auth_config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authenticationState } from "../RecoilState";
 import { useRecoilState } from "recoil";
+import { ReactNode } from "react";
+import {
+  AuthContextType,
+  Authentication,
+} from "../stores/types/AuthContext.type";
 
-const AuthContext = createContext();
+const AuthContext = createContext<AuthContextType>({
+  request: null,
+  response: null,
+  promptAsync: () => {},
+});
 const useAuthContext = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -14,7 +24,7 @@ const useAuthContext = () => {
   return context;
 };
 
-const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [authentication, setAuthentication] =
     useRecoilState(authenticationState);
   const discovery = {
@@ -40,7 +50,7 @@ const AuthProvider = ({ children }) => {
       const issuedAt = authentication?.issuedAt;
       if (accessToken && expirationTime) {
         const currentTime = Date.now();
-        const expirationDate = issuedAt + expirationTime;
+        const expirationDate = issuedAt ? issuedAt + expirationTime : 0;
         if (currentTime > expirationDate) {
           setAuthentication(null);
           await AsyncStorage.removeItem("authentication");

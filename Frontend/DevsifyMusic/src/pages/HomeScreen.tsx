@@ -12,17 +12,18 @@ import Recently from "../components/Home/Recently";
 import Recomment from "../components/Home/Recomment";
 import YourArtist from "../components/Home/YourArtist";
 import AnotherWay from "../components/Home/AnotherWay";
+import { useNavigation } from "@react-navigation/native";
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
   const [caterogy, setCategory] = useState("all");
+  const navigation = useNavigation();
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: "rgba(0, 0, 0, 0.9)",
         shadowColor: "transparent",
-        height: 120,
+        height: 100,
       },
-
       headerLeft: () => (
         <Pressable className="border rounded-full ml-1 my-5 border-gray-400 p-1">
           <Image
@@ -84,7 +85,7 @@ const HomeScreen = ({ navigation }) => {
     });
   }, [navigation, caterogy]);
 
-  const handleCategory = (category) => {
+  const handleCategory = (category: string) => {
     setCategory(category);
   };
 

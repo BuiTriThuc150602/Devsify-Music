@@ -15,7 +15,14 @@ function BottomTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+          let iconName:
+            | "home"
+            | "home-outline"
+            | "library"
+            | "library-outline"
+            | "search"
+            | "search-outline"
+            | undefined;
 
           if (route.name === "Trang Chủ") {
             iconName = focused ? "home" : "home-outline";
