@@ -1,20 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { PlayerContext } from "./src/contexts/PlayerContext";
+import { ModalPortal } from "react-native-modals";
+import Navigation from "./src/StackNavigator";
+import { AuthProvider } from "./src/contexts/AuthContext";
+import { RecoilRoot } from "recoil";
+import { Suspense } from "react";
+import { ActivityIndicator } from "react-native";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Suspense fallback={<ActivityIndicator size={20} color={"white"}/>}>
+      <RecoilRoot>
+        <AuthProvider>
+          <PlayerContext>
+            <Navigation />
+            <ModalPortal />
+          </PlayerContext>
+        </AuthProvider>
+      </RecoilRoot>
+    </Suspense>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

@@ -1,0 +1,22 @@
+{
+  "authentication": {
+    "accessToken": "BQBdll1JFXKQCp80tLMFiDnj8ld6LKNFkCTNbjnJNO6nTf0elIRIEZTC3fpff38TFGsCE2NXMbNNFZkXnhrTLepLYUXQQLJvv8OacDVJPU9bBA0g_jHaFw6rXY2qr8KRQ2-4ARccFYszJ4Wq_Sm2rwF00t4PtJWk-oadcnN9dOPqNOUKiGjwJTWnl5C76eR9w1VWuOiaabkRu5D8ly9_HVfBfN-526Ly5PPSSj-m1TBxo7q5_gl4c_GM00cn6pyhwWLl3o-ZX-BxJg",
+    "expiresIn": "3600",
+    "idToken": "undefined",
+    "issuedAt": 1728836920,
+    "refreshToken": "undefined",
+    "scope": "undefined",
+    "state": "Ekznhx3kxy",
+    "tokenType": "Bearer"
+  },
+  "error": null,
+  "errorCode": null,
+  "params": {
+    "access_token": "BQBdll1JFXKQCp80tLMFiDnj8ld6LKNFkCTNbjnJNO6nTf0elIRIEZTC3fpff38TFGsCE2NXMbNNFZkXnhrTLepLYUXQQLJvv8OacDVJPU9bBA0g_jHaFw6rXY2qr8KRQ2-4ARccFYszJ4Wq_Sm2rwF00t4PtJWk-oadcnN9dOPqNOUKiGjwJTWnl5C76eR9w1VWuOiaabkRu5D8ly9_HVfBfN-526Ly5PPSSj-m1TBxo7q5_gl4c_GM00cn6pyhwWLl3o-ZX-BxJg",
+    "expires_in": "3600",
+    "state": "Ekznhx3kxy",
+    "token_type": "Bearer"
+  },
+  "type": "success",
+  "url": "exp://192.168.100.231:8081/#access_token=BQBdll1JFXKQCp80tLMFiDnj8ld6LKNFkCTNbjnJNO6nTf0elIRIEZTC3fpff38TFGsCE2NXMbNNFZkXnhrTLepLYUXQQLJvv8OacDVJPU9bBA0g_jHaFw6rXY2qr8KRQ2-4ARccFYszJ4Wq_Sm2rwF00t4PtJWk-oadcnN9dOPqNOUKiGjwJTWnl5C76eR9w1VWuOiaabkRu5D8ly9_HVfBfN-526Ly5PPSSj-m1TBxo7q5_gl4c_GM00cn6pyhwWLl3o-ZX-BxJg&token_type=Bearer&expires_in=3600&state=Ekznhx3kxy"
+}
