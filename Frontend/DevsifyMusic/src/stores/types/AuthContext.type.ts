@@ -7,12 +7,23 @@ export interface AuthContextType {
 }
 
 export type Authentication = {
-  accessToken: string;
-  expiresIn?: number | undefined;
+  access_token: string;
+  expires_in?: number | undefined;
   idToken: string | undefined;
   issuedAt: number;
-  refreshToken: string | undefined;
+  refresh_token: string | undefined;
   scope: string | undefined;
   state: string;
-  tokenType: string;
+  token_type: string;
+};
+
+export type SpotifyConfig = {
+  client_id: string | undefined;
+  client_secret: string | undefined;
+  redirect_uri: string | undefined;
+  scopes: string[];
+  discovery: {
+    authorizationEndpoint: string | undefined;
+    tokenEndpoint: string | undefined;
+  };
 };

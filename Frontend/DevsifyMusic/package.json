@@ -14,6 +14,7 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "axios": "^1.7.7",
+    "daisyui": "^4.12.14",
     "expo": "~51.0.38",
     "expo-auth-session": "^5.5.2",
     "expo-linear-gradient": "^13.0.2",

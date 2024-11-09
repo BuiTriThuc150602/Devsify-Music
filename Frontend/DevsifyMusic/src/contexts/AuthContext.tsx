@@ -1,15 +1,16 @@
 import React from "react";
 import { ResponseType, useAuthRequest } from "expo-auth-session";
 import { createContext, useContext, useEffect } from "react";
-import { config } from "../configs/auth_config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authenticationState } from "../RecoilState";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { ReactNode } from "react";
 import {
   AuthContextType,
   Authentication,
+  SpotifyConfig,
 } from "../stores/types/AuthContext.type";
+import { AuthAPI } from "../api/Auth";
 
 const AuthContext = createContext<AuthContextType>({
   request: null,
@@ -25,52 +26,44 @@ const useAuthContext = () => {
 };
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [config, setConfig] = React.useState<SpotifyConfig>();
   const [authentication, setAuthentication] =
-    useRecoilState(authenticationState);
-  const discovery = {
-    authorizationEndpoint: "https://accounts.spotify.com/authorize",
-    tokenEndpoint: "https://accounts.spotify.com/api/token",
-  };
+    useRecoilState<Partial<Authentication> | null>(authenticationState);
   const [request, response, promptAsync] = useAuthRequest(
     {
-      responseType: ResponseType.Token,
-      clientId: config.clientId,
-      clientSecret: config.clientSecret,
-      scopes: config.scopes,
+      responseType: ResponseType.Code,
+      clientId: config?.client_id || "",
+      scopes: config?.scopes,
       usePKCE: false,
-      redirectUri: config.redirectUrl,
+      redirectUri: config?.redirect_uri || "",
     },
-    discovery
+    config?.discovery as any
   );
 
   useEffect(() => {
-    const checkTokenValidity = async () => {
-      const accessToken = authentication?.accessToken;
-      const expirationTime = authentication?.expiresIn;
-      const issuedAt = authentication?.issuedAt;
-      if (accessToken && expirationTime) {
-        const currentTime = Date.now();
-        const expirationDate = issuedAt ? issuedAt + expirationTime : 0;
-        if (currentTime > expirationDate) {
-          setAuthentication(null);
-          await AsyncStorage.removeItem("authentication");
-        }
-      }
-    };
-    checkTokenValidity();
-  }, [authentication]);
+    if (!authentication) {
+      const getConfig = async () => {
+        const api = new AuthAPI();
+        const configData = await api.getConfig();
+        setConfig(configData);
+      };
+      getConfig();
+    }
+  }, []);
 
   useEffect(() => {
-    if (response?.type === "success") {
-      const authentication = response.authentication;
-      if (authentication?.accessToken) {
-        setAuthentication(authentication);
-      } else {
-        console.log("Error");
-        setAuthentication(null);
+    const getAuthenToken = async () => {
+      if (response?.type === "success") {
+        const { code, state } = response.params;
+        const getAuthAPI = new AuthAPI();
+        const auth = await getAuthAPI.getAuth(code, state);
+        await AsyncStorage.setItem("authentication", JSON.stringify(auth));
+        setAuthentication(auth);
       }
-    }
+    };
+    getAuthenToken();
   }, [response]);
+
   return (
     <AuthContext.Provider value={{ request, response, promptAsync }}>
       {children}
