@@ -3,14 +3,14 @@ import { ResponseType, useAuthRequest } from "expo-auth-session";
 import { createContext, useContext, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authenticationState } from "../RecoilState";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { ReactNode } from "react";
 import {
   AuthContextType,
   Authentication,
   SpotifyConfig,
 } from "../stores/types/AuthContext.type";
-import { AuthAPI } from "../api/Auth";
+import { AuthAPI } from "../api/Auth.service";
 
 const AuthContext = createContext<AuthContextType>({
   request: null,

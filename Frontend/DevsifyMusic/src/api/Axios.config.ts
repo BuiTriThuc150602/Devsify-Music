@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { getAuthenticationFromStorage } from "../RecoilState";
+import { getAuthenticationFromStorage } from "../utils/AsyncStorage.util";
 
 export const AxiosConfig = axios.create({
   baseURL: process.env.EXPO_PUBLIC_BASE_URL,

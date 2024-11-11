@@ -64,7 +64,9 @@ const HomeScreen = () => {
             <Text className="text-white text-xl font-bold">Devsify Music</Text>
           )}
           {profile.state === "loading" && (
-            <View className="loading loading-bars loading-lg" />
+            <View className="flex-row items-center gap-5">
+              <Text className="text-white text-xl font-bold">Loading...</Text>
+            </View>
           )}
         </View>
       ),
