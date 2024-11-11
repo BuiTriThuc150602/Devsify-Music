@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, Pressable, Image } from "react-native";
-import React, { useContext } from "react";
+import { Text, View, Pressable, Image } from "react-native";
+import React from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { currentTrackState } from "../RecoilState";
+import { useSetRecoilState } from "recoil";
+import { currentTrackState, isPlayingState } from "../RecoilState";
 import { Track } from "../stores/types/SpotifyTrack.type";
 
 const SongItem = ({
@@ -16,8 +16,10 @@ const SongItem = ({
   isPlaying: boolean;
 }) => {
   const setCurrentTrack = useSetRecoilState(currentTrackState);
+  const setIsPlaying = useSetRecoilState(isPlayingState);
   const handlePress = () => {
     setCurrentTrack(item);
+    setIsPlaying(true);
     onPress(item);
   };
   return (

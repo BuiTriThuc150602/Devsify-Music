@@ -77,3 +77,8 @@ export const currentSoundState = atom<any>({
   key: "currentSoundStateKey",
   default: null,
 });
+
+export const isPlayingState = atom<boolean>({
+  key: "isPlayingStateKey",
+  default: false,
+});

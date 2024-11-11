@@ -4,6 +4,7 @@ import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
 import {
   currentSoundState,
   currentTrackState,
+  isPlayingState,
   userSaveTrackSelector,
 } from "../RecoilState";
 import { BottomModal, ModalContent } from "react-native-modals";
@@ -27,7 +28,7 @@ const PlayingModel = () => {
   const [progress, setProgress] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState);
 
   const colors = [
     "#27374D",
@@ -42,10 +43,15 @@ const PlayingModel = () => {
   ];
 
   useEffect(() => {
-    playTrack();
+    if (isPlaying) playTrack();
+    const indexCurrentTrack = savedTracks?.items.findIndex(
+      (item) => item.track.id === currentTrack?.id
+    );
+    value.current = indexCurrentTrack || 0;
   }, [currentTrack]);
+
   const playTrack = async () => {
-    if (savedTracks?.items && savedTracks.items.length > 0 ) {
+    if (savedTracks?.items && savedTracks.items.length > 0 && !currentTrack) {
       setCurrentTrack(savedTracks.items[0].track);
     }
     currentTrack && (await play(currentTrack));
@@ -64,7 +70,6 @@ const PlayingModel = () => {
       });
       if (!preview_url) {
         console.log("No preview url");
-
         playNextTrack();
         return;
       }
@@ -134,7 +139,7 @@ const PlayingModel = () => {
       const nextTrack = savedTracks?.items[value.current].track;
       setCurrentTrack(nextTrack);
       extractColors();
-      await play(nextTrack);
+      // await play(nextTrack);
     } else {
       console.log("end of playlist");
     }
@@ -150,7 +155,7 @@ const PlayingModel = () => {
       const nextTrack = savedTracks?.items[value.current].track;
       setCurrentTrack(nextTrack);
       extractColors();
-      await play(nextTrack);
+      // await play(nextTrack);
     } else {
       console.log("end of playlist");
     }
