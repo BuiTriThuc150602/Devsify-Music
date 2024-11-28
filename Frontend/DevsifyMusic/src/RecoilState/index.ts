@@ -7,6 +7,7 @@ import { SpotifyPlaylist } from "../stores/types/SpotifyPlaylist.type";
 import { getAuthenticationFromStorage } from "../utils/AsyncStorage.util";
 import { TrackAPI } from "../api/Track.service";
 import { SpotifyTrack, Track } from "../stores/types/SpotifyTrack.type";
+import { Sound } from "expo-av/build/Audio";
 
 const profileApi = new ProfileAPI();
 const trackApi = new TrackAPI();
@@ -65,7 +66,6 @@ export const userSaveTrackSelector = selector<SpotifyTrack | null>({
     const authentication = get(authenticationState);
     if (authentication && authentication.access_token) {
       const tracks =  await trackApi.getUserSavedTracks();
-      console.log("USER SAVED TRACKS", tracks);
       return tracks;
       
     }
@@ -73,7 +73,7 @@ export const userSaveTrackSelector = selector<SpotifyTrack | null>({
   },
 });
 
-export const currentSoundState = atom<any>({
+export const currentSoundState = atom<Sound | null>({
   key: "currentSoundStateKey",
   default: null,
 });

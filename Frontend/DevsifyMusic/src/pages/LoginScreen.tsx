@@ -16,7 +16,6 @@ const LoginScreen = () => {
     if (authentication && authentication.access_token) {
       navigation.navigate("Main");
     } else {
-      console.log("Navigating to Login");
       navigation.navigate("Login");
     }
   }, [authentication]);

@@ -16,12 +16,9 @@ import { Entypo } from "@expo/vector-icons";
 
 import { debounce } from "lodash";
 import { useRecoilState, useRecoilValueLoadable } from "recoil";
-import {
-  currentTrackState,
-  userSaveTrackSelector,
-} from "../RecoilState";
+import { currentTrackState, userSaveTrackSelector } from "../RecoilState";
 import SongItem from "../components/SongItem";
-import { Track } from "../stores/types/SpotifyTrack.type";
+import { SpotifyTrackItem, Track } from "../stores/types/SpotifyTrack.type";
 
 const LikedSongsScreen = () => {
   const navigation = useNavigation();
@@ -34,19 +31,27 @@ const LikedSongsScreen = () => {
     if (savedTracks.state === "hasValue") {
       if (savedTracks.contents) {
         setSearchedTracks(
-          savedTracks.contents.items?.map((item: any) => item.track)
+          savedTracks.contents.items?.map(
+            (item: SpotifyTrackItem) => item.track
+          )
         );
       }
     }
-    
   }, [savedTracks]);
 
   const debouncedSearch = debounce(handleSearch, 800);
   function handleSearch(text: string) {
-    const filteredTracks = savedTracks.contents?.filter((item: any) =>
-      item.track.name.toLowerCase().includes(text.toLowerCase())
-    );
-    setSearchedTracks(filteredTracks.map((item: any) => item.track));
+    if (savedTracks.state === "hasValue") {
+      const filteredTracks = savedTracks.contents?.items?.filter(
+        (item: SpotifyTrackItem) =>
+          item.track.name.toLowerCase().includes(text.toLowerCase())
+      );
+      if (filteredTracks) {
+        setSearchedTracks(
+          filteredTracks.map((item: SpotifyTrackItem) => item.track)
+        );
+      }
+    }
   }
   const handleInputChange = (text: string) => {
     setInput(text);
@@ -168,7 +173,8 @@ const LikedSongsScreen = () => {
           {savedTracks.state === "loading" ? (
             <ActivityIndicator size="large" color="gray" />
           ) : (
-            searchedTracks && searchedTracks?.map((item: Track, index: number) => (
+            searchedTracks &&
+            searchedTracks?.map((item: Track, index: number) => (
               <SongItem
                 key={index}
                 item={item}

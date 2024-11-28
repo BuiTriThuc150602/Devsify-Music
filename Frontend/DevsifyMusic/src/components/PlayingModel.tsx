@@ -15,7 +15,7 @@ import {
   Feather,
   Ionicons,
 } from "@expo/vector-icons";
-import { Audio } from "expo-av";
+import { Audio, AVPlaybackStatus } from "expo-av";
 import { Track } from "../stores/types/SpotifyTrack.type";
 
 const PlayingModel = () => {
@@ -91,17 +91,19 @@ const PlayingModel = () => {
       console.log(err.message);
     }
   };
-  const onPlaybackStatusUpdate = async (status: any) => {
-    if (status.isLoaded && status.isPlaying) {
-      const progress = status.positionMillis / status.durationMillis;
-      setProgress(progress);
-      setCurrentTime(status.positionMillis);
-      setTotalDuration(status.durationMillis);
-    }
+  const onPlaybackStatusUpdate = async (status: AVPlaybackStatus) => {
+    if (status.isLoaded) {
+      if (status.isPlaying) {
+        const progress = status.positionMillis / (status.durationMillis || 1);
+        setProgress(progress);
+        setCurrentTime(status.positionMillis);
+        setTotalDuration(status.durationMillis || 0);
+      }
 
-    if (status.didJustFinish === true) {
-      setCurrentSound(null);
-      playNextTrack();
+      if (status.didJustFinish) {
+        setCurrentSound(null);
+        playNextTrack();
+      }
     }
   };
 

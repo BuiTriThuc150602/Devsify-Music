@@ -20,7 +20,6 @@ export class AuthAPI {
       code,
       state,
     });
-    console.log("Auth", auth.data);
     return auth.data;
   }
 

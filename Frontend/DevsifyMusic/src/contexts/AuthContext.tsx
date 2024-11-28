@@ -23,7 +23,9 @@ const useAuthContext = () => {
     throw new Error("useAuthContext must be used within AuthProvider");
   }
   return context;
-};
+};             
+
+// (async () => await AsyncStorage.clear())() 
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = React.useState<SpotifyConfig>();

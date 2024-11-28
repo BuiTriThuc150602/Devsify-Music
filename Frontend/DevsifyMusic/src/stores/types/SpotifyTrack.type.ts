@@ -41,7 +41,7 @@ export type Track = {
   is_local: boolean;
 };
 
-type SpotifyTrackItem = {
+export type SpotifyTrackItem = {
   added_at: string;
   track: Track;
 };
