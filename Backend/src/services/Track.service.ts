@@ -69,22 +69,26 @@ export class TrackService {
   }
 
   public async getAudioRepalce(name: string) {
-    const findSong = await fetch(
-      `https://ac.zingmp3.vn/v1/web/ac-suggestions?num=10&query=${name}&language=vi&ctime=1732862638&version=1.11.11&sig=491ee6fafb358f488c14981a3f2485258fb782b704c22972f804fd1caf51586965e384dc540355b7123380a30fcb34cd6a580217532aead50741b60a43628a13&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        return (data as any).data.items[1].suggestions[0];
-      });
+    try {
+      const findSong = await fetch(
+        `https://ac.zingmp3.vn/v1/web/ac-suggestions?num=10&query=${name}&language=vi&ctime=1732862638&version=1.11.11&sig=491ee6fafb358f488c14981a3f2485258fb782b704c22972f804fd1caf51586965e384dc540355b7123380a30fcb34cd6a580217532aead50741b60a43628a13&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          return (data as any).data.items[1].suggestions[0];
+        });
 
-    const id = findSong.id;
-    const song = await ZingMp3.getSong(id).then((data) => {
-      console.log(data);
-      return data;
-    });
-    return song.data["128"];
+      const id = findSong.id;
+      const song = await ZingMp3.getSong(id).then((data) => {
+        console.log(data);
+        return data;
+      });
+      return song.data["128"] || "";
+    } catch (error) {
+      return "";
+    }
   }
 
   public async getArtistTopTracks(accessToken: string, artist_id: string) {
@@ -102,11 +106,14 @@ export class TrackService {
 
   public async search(accessToken: string, query: string) {
     try {
-      const response = await this.api.get(`/search?q=${query}&type=artist,playlist,track`, {
-        headers: {
-          Authorization: accessToken,
-        },
-      });
+      const response = await this.api.get(
+        `/search?q=${query}&type=artist,playlist,track`,
+        {
+          headers: {
+            Authorization: accessToken,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       throw error;
