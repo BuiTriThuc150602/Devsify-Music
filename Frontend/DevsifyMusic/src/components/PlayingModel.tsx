@@ -2,33 +2,32 @@ import { Image, Pressable, Text, View } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil";
 import {
+  currentListTrackState,
   currentSoundState,
   currentTrackState,
   isPlayingState,
   userSaveTrackSelector,
 } from "../RecoilState";
 import { BottomModal, ModalContent } from "react-native-modals";
-import {
-  AntDesign,
-  Entypo,
-  FontAwesome,
-  Feather,
-  Ionicons,
-} from "@expo/vector-icons";
+import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
 import { Audio, AVPlaybackStatus } from "expo-av";
 import { Track } from "../stores/types/SpotifyTrack.type";
+import { TrackAPI } from "../api/Track.service";
+import { useNavigation } from "@react-navigation/native";
 
 const PlayingModel = () => {
+  const navigation = useNavigation();
+  const [isShow, setIsShow] = useState(true);
   const [backgroundColor, setBackgroundColor] = useState("#0A2647");
   const [currentTrack, setCurrentTrack] = useRecoilState(currentTrackState);
   const [modalVisible, setModalVisible] = useState(false);
-  const savedTracks = useRecoilValue(userSaveTrackSelector);
   const value = useRef(0);
   const [currentSound, setCurrentSound] = useRecoilState(currentSoundState);
   const [progress, setProgress] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState);
+  const currentListTracks = useRecoilValue(currentListTrackState);
 
   const colors = [
     "#27374D",
@@ -40,25 +39,42 @@ const PlayingModel = () => {
     "#443C68",
     "#5B8FB9",
     "#144272",
+    "#1F4068",
   ];
 
   useEffect(() => {
+    console.log((navigation as any).getCurrentRoute().name);
+    
+    if ((navigation as any).getCurrentRoute().name === "Artist"
+      || (navigation as any).getCurrentRoute().name === "Tìm Kiếm"
+  ) {
+      setIsShow(false);
+    } else {
+      setIsShow(true);
+    }
+  }, [navigation.getState()]);
+
+  useEffect(() => {
     if (isPlaying) playTrack();
-    const indexCurrentTrack = savedTracks?.items.findIndex(
+    const indexCurrentTrack = currentListTracks?.findIndex(
       (item) => item.track.id === currentTrack?.id
     );
     value.current = indexCurrentTrack || 0;
   }, [currentTrack]);
 
   const playTrack = async () => {
-    if (savedTracks?.items && savedTracks.items.length > 0 && !currentTrack) {
-      setCurrentTrack(savedTracks.items[0].track);
+    if (currentListTracks && currentListTracks.length > 0 && !currentTrack) {
+      setCurrentTrack(currentListTracks[0].track);
     }
     currentTrack && (await play(currentTrack));
   };
 
   const play = async (nextTrack: Track) => {
-    const preview_url = nextTrack?.preview_url;
+    let preview_url = nextTrack?.preview_url;
+    if (!preview_url) {
+      const trackService = new TrackAPI();
+      preview_url = await trackService.getAudioRepalce(nextTrack?.name);
+    }
     try {
       if (currentSound) {
         await currentSound.stopAsync();
@@ -69,7 +85,6 @@ const PlayingModel = () => {
         shouldDuckAndroid: true,
       });
       if (!preview_url) {
-        console.log("No preview url");
         playNextTrack();
         return;
       }
@@ -137,13 +152,14 @@ const PlayingModel = () => {
       setCurrentSound(null);
     }
     value.current += 1;
-    if (savedTracks?.items && value.current < savedTracks.items.length) {
-      const nextTrack = savedTracks?.items[value.current].track;
+    if (currentListTracks && value.current < currentListTracks.length) {
+      const nextTrack = currentListTracks[value.current].track;
       setCurrentTrack(nextTrack);
       extractColors();
-      // await play(nextTrack);
     } else {
       console.log("end of playlist");
+      value.current = 0;
+      setCurrentTrack(currentListTracks ? currentListTracks[0].track : null);
     }
   };
 
@@ -153,13 +169,14 @@ const PlayingModel = () => {
       setCurrentSound(null);
     }
     value.current -= 1;
-    if (savedTracks?.items && value.current < savedTracks.items.length) {
-      const nextTrack = savedTracks?.items[value.current].track;
+    if (currentListTracks && value.current < currentListTracks.length) {
+      const nextTrack = currentListTracks[value.current].track;
       setCurrentTrack(nextTrack);
       extractColors();
-      // await play(nextTrack);
     } else {
       console.log("end of playlist");
+      value.current = 0;
+      setCurrentTrack(currentListTracks ? currentListTracks[0].track : null);
     }
   };
 
@@ -171,20 +188,26 @@ const PlayingModel = () => {
           style={{
             backgroundColor: backgroundColor,
           }}
-          className={`flex-row w-[96%] p-3 rounded-md absolute bottom-16 left-2 items-center justify-between gap-3`}
+          className={`flex-row ${
+            isShow ? "w-[96%] left-2" : "right-2"
+          } p-3 rounded-md absolute bottom-16 items-center justify-between gap-3`}
         >
           <View className="flex-row gap-5 items-center">
             <Image
               className="w-12 h-12 rounded-md"
               source={{ uri: currentTrack?.album?.images[0].url }}
             />
-            <Text numberOfLines={1} className="text-white font-bold w-56">
-              {currentTrack?.name} • {currentTrack?.artists[0].name}
-            </Text>
+            {isShow && (
+              <Text numberOfLines={1} className="text-white font-bold w-56">
+                {currentTrack?.name} • {currentTrack?.artists[0].name}
+              </Text>
+            )}
           </View>
 
           <View className="flex-row gap-5 items-center">
-            <AntDesign name="heart" size={24} color="#1DB954" />
+            <Text className="text-white">
+              {formatTime(currentTime)} / {formatTime(totalDuration)}
+            </Text>
             <Pressable onPress={handlePlayPause}>
               {isPlaying ? (
                 <AntDesign name="pausecircle" size={28} color="white" />
@@ -281,30 +304,30 @@ const PlayingModel = () => {
                   </Text>
                 </View>
               </View>
-              <View className="flex-row items-center justify-between mt-5">
-                <Pressable>
-                  <FontAwesome name="arrows" size={30} color="#03C03C" />
-                </Pressable>
+              <View
+                style={{
+                  marginTop: 20,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderWidth: 0.1,
+                }}
+              >
                 <Pressable onPress={playPreviousTrack}>
                   <Ionicons name="play-skip-back" size={30} color="white" />
                 </Pressable>
-                <Pressable onPress={handlePlayPause}>
+                <Pressable
+                  onPress={handlePlayPause}
+                  className="flex items-center justify-center w-16 h-16 rounded-full bg-white"
+                >
                   {isPlaying ? (
-                    <AntDesign name="pausecircle" size={60} color="white" />
+                    <AntDesign name="pausecircle" size={26} color="black" />
                   ) : (
-                    <Pressable
-                      onPress={handlePlayPause}
-                      className="flex items-center justify-center w-16 h-16 rounded-full bg-white"
-                    >
-                      <Entypo name="controller-play" size={26} color="black" />
-                    </Pressable>
+                    <Entypo name="controller-play" size={26} color="black" />
                   )}
                 </Pressable>
                 <Pressable onPress={playNextTrack}>
                   <Ionicons name="play-skip-forward" size={30} color="white" />
-                </Pressable>
-                <Pressable>
-                  <Feather name="repeat" size={30} color="#03C03C" />
                 </Pressable>
               </View>
             </View>

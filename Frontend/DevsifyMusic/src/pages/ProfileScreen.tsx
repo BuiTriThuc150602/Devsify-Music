@@ -1,5 +1,5 @@
-import { Image, ScrollView, Text, View } from "react-native";
-import React, { useState } from "react";
+import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
+import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRecoilValueLoadable } from "recoil";
 import { profileSelector, userPlaylistsSelector } from "../RecoilState";
@@ -36,9 +36,7 @@ const ProfileScreen = () => {
         <View className="p-6">
           {playlists.state === "loading" && (
             <View>
-              <Text className="text-white text-lg font-semibold border border-white p-5 rounded-xl text-center">
-                Đang tải danh sách phát...
-              </Text>
+              <ActivityIndicator size="large" color="gray" />
             </View>
           )}
           {playlists.state === "hasError" && (
@@ -53,12 +51,12 @@ const ProfileScreen = () => {
               return (
                 <View
                   key={item.id}
-                  className="flex-row items-center gap-5 p-5 border-b border-gray-700"
+                  className="flex-row items-center gap-5 p-3 bg-[#1f1f1f] rounded-lg mt-3"
                 >
                   <Image
                     source={{
                       uri:
-                        (item.images && item?.images[1]?.url) ||
+                        (item.images && item?.images[0]?.url) ||
                         "https://images.pexels.com/photos/3944091/pexels-photo-3944091.jpeg?auto=compress&cs=tinysrgb&w=800",
                     }}
                     style={{ width: 80, height: 80, borderRadius: 4 }}
@@ -77,6 +75,8 @@ const ProfileScreen = () => {
                 </View>
               );
             })}
+
+          <View className="h-28" />
         </View>
       </ScrollView>
     </LinearGradient>

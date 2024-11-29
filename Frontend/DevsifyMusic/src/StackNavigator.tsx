@@ -10,6 +10,9 @@ import SearchScreen from "./pages/SearchScreen";
 import ProfileScreen from "./pages/ProfileScreen";
 import LikedSongsScreen from "./pages/LikedSongsScreen";
 import PlayingModel from "./components/PlayingModel";
+import { useRecoilValue } from "recoil";
+import { authenticationState } from "./RecoilState";
+import { ArtistAlbum } from "./pages/ArtistAlbum";
 
 const Tab = createBottomTabNavigator();
 
@@ -66,6 +69,7 @@ function BottomTabs() {
           name="Tìm Kiếm"
           navigationKey="Search"
           component={SearchScreen}
+          options={{ headerShown: false }}
         />
         <Tab.Screen
           name="Cá Nhân"
@@ -74,16 +78,20 @@ function BottomTabs() {
           component={ProfileScreen}
         />
       </Tab.Navigator>
-      <PlayingModel />
     </>
   );
 }
 
 const Stack = createNativeStackNavigator();
 function Navigation() {
+  const authentication = useRecoilValue(authenticationState);
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        initialRouteName={
+          authentication && authentication.access_token ? "Main" : "Login"
+        }
+      >
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -94,7 +102,13 @@ function Navigation() {
           component={BottomTabs}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="Artist"
+          component={ArtistAlbum}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
+      <PlayingModel />
     </NavigationContainer>
   );
 }

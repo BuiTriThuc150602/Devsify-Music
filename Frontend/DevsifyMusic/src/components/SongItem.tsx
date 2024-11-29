@@ -12,11 +12,12 @@ const SongItem = ({
   isPlaying,
 }: {
   item: Track;
-  onPress: (item: any) => void;
+  onPress: (item: Track) => void;
   isPlaying: boolean;
 }) => {
   const setCurrentTrack = useSetRecoilState(currentTrackState);
   const setIsPlaying = useSetRecoilState(isPlayingState);
+  
   const handlePress = () => {
     setCurrentTrack(item);
     setIsPlaying(true);

@@ -5,7 +5,6 @@ import { RecoilRoot } from "recoil";
 import React, { Suspense } from "react";
 import { ActivityIndicator } from "react-native";
 import "./global.css";
-import PlayingModel from "./src/components/PlayingModel";
 
 export default function App() {
   return (

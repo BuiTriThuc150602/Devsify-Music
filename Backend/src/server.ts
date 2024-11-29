@@ -1,9 +1,9 @@
+import 'reflect-metadata';
 import { Request, Response } from "express";
-import { generateRandomString } from "./utils/generateRandomString";
 
 import * as dotenv from "dotenv";
-import * as cors from "cors";
-import * as express from "express";
+import cors from "cors";
+import express from "express";
 import * as bodyParser from "body-parser";
 import { Routes } from "./routes";
 import errorHandler from "./middlewares/ErrorHandeler.middleware";

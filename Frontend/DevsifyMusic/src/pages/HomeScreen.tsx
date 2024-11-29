@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  FlatList,
   Image,
   Pressable,
   ScrollView,
@@ -10,15 +11,17 @@ import { useEffect, useState } from "react";
 import GettingStarted from "../components/Home/GettingStarted";
 import Recently from "../components/Home/Recently";
 import Recomment from "../components/Home/Recomment";
-import YourArtist from "../components/Home/YourArtist";
+import YourArtist from "../components/Artist/YourArtist";
 import AnotherWay from "../components/Home/AnotherWay";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { profileSelector } from "../RecoilState";
 import { useRecoilValueLoadable } from "recoil";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomTabParamList } from "../stores/types/RootStackParamList";
 
 const HomeScreen = () => {
   const [caterogy, setCategory] = useState("all");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<BottomTabParamList>>();
   const profile = useRecoilValueLoadable(profileSelector);
 
   useEffect(() => {
@@ -29,7 +32,11 @@ const HomeScreen = () => {
         height: 100,
       },
       headerLeft: () => (
-        <Pressable className="border rounded-full ml-1 my-5 border-gray-400">
+        <Pressable
+          onPress={() => {
+            navigation.navigate("Cá Nhân");
+          }}
+         className="border rounded-full ml-1 my-5 border-gray-400">
           {profile.state === "hasValue" && profile.contents && (
             <Image
               source={{ uri: profile.contents.images[0].url }}
@@ -78,59 +85,63 @@ const HomeScreen = () => {
   };
 
   return (
-    <ScrollView className="flex bg-black h-screen">
-      <View className="flex flex-row w-full items-center">
-        <Pressable
-          className={`rounded-full my-5 border-gray-400 w-[70px] h-8 justify-center items-center ${
-            caterogy === "all" ? "bg-green-600 text-gray-950" : "bg-gray-800"
-          }  `}
-          onPress={() => handleCategory("all")}
-        >
-          <Text
-            className={`${
-              caterogy === "all" ? " text-gray-950" : "text-white"
-            }`}
+    <GestureHandlerRootView>
+      <ScrollView className="flex bg-black h-screen">
+        <View className="flex flex-row w-full items-center">
+          <Pressable
+            className={`rounded-full my-5 border-gray-400 w-[70px] h-8 justify-center items-center ${
+              caterogy === "all" ? "bg-green-600 text-gray-950" : "bg-gray-800"
+            }  `}
+            onPress={() => handleCategory("all")}
           >
-            Tất cả
-          </Text>
-        </Pressable>
-        <Pressable
-          className={`rounded-full ml-5 my-5 border-gray-400 w-[70px] h-8 justify-center items-center ${
-            caterogy === "music" ? "bg-green-600 text-gray-950" : "bg-gray-800"
-          }`}
-          onPress={() => handleCategory("music")}
-        >
-          <Text
-            className={`${
-              caterogy === "music" ? "text-gray-950" : "text-white"
+            <Text
+              className={`${
+                caterogy === "all" ? " text-gray-950" : "text-white"
+              }`}
+            >
+              Tất cả
+            </Text>
+          </Pressable>
+          <Pressable
+            className={`rounded-full ml-5 my-5 border-gray-400 w-[70px] h-8 justify-center items-center ${
+              caterogy === "music"
+                ? "bg-green-600 text-gray-950"
+                : "bg-gray-800"
             }`}
+            onPress={() => handleCategory("music")}
           >
-            Nhạc
-          </Text>
-        </Pressable>
-        <Pressable
-          className={`rounded-full ml-5 my-5 border-gray-400 w-[70px] h-8 justify-center items-center ${
-            caterogy === "postcards"
-              ? "bg-green-600 text-gray-950"
-              : "bg-gray-800"
-          }`}
-          onPress={() => handleCategory("postcards")}
-        >
-          <Text
-            className={`${
-              caterogy === "postcards" ? " text-gray-950" : "text-white"
+            <Text
+              className={`${
+                caterogy === "music" ? "text-gray-950" : "text-white"
+              }`}
+            >
+              Nhạc
+            </Text>
+          </Pressable>
+          <Pressable
+            className={`rounded-full ml-5 my-5 border-gray-400 w-[70px] h-8 justify-center items-center ${
+              caterogy === "postcards"
+                ? "bg-green-600 text-gray-950"
+                : "bg-gray-800"
             }`}
+            onPress={() => handleCategory("postcards")}
           >
-            Postcards
-          </Text>
-        </Pressable>
-      </View>
-      <GettingStarted />
-      <AnotherWay />
-      <Recently />
-      <Recomment />
-      <YourArtist />
-    </ScrollView>
+            <Text
+              className={`${
+                caterogy === "postcards" ? " text-gray-950" : "text-white"
+              }`}
+            >
+              Postcards
+            </Text>
+          </Pressable>
+        </View>
+        <GettingStarted />
+        <YourArtist />
+        <Recently />
+        <AnotherWay />
+        <Recomment />
+      </ScrollView>
+    </GestureHandlerRootView>
   );
 };
 

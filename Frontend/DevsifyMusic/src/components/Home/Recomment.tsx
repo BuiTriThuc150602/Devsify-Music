@@ -32,7 +32,6 @@ const Recomment = () => {
       </Text>
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id}
         horizontal
         renderItem={({ item }) => (
           <Pressable className="flex relative w-40 h-50 mr-5 rounded-lg">

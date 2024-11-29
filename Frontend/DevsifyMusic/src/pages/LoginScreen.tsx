@@ -13,6 +13,8 @@ const LoginScreen = () => {
   const { promptAsync } = useAuthContext();
 
   useEffect(() => {
+    console.log("Check authentication", authentication);
+    
     if (authentication && authentication.access_token) {
       navigation.navigate("Main");
     } else {

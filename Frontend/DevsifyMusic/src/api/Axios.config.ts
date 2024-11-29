@@ -43,6 +43,8 @@ AxiosConfig.interceptors.response.use(
             access_token: auth.data.access_token,
           })
         );
+        console.log("token refreshed", auth.data.access_token);
+        
         return AxiosConfig.request(error.config);
       }
     }

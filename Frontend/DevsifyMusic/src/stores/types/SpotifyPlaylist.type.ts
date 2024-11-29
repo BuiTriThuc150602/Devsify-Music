@@ -8,7 +8,7 @@ export type SpotifyPlaylist = {
   items: Array<Item>;
 };
 
-type Item = {
+export type Item = {
   collaborative: boolean;
   description: string;
   external_urls: {

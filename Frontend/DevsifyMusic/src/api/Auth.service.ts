@@ -15,10 +15,11 @@ export class AuthAPI {
     const config = await this.api.get("/spotify-config");
     return config.data;
   }
-  async getAuth(code: string, state: string): Promise<Authentication> {
+  async getAuth(code: string, state: string, redirect_uri : string): Promise<Authentication> {
     const auth = await this.api.post("/spotify-callback-auth", {
       code,
       state,
+      redirect_uri
     });
     return auth.data;
   }

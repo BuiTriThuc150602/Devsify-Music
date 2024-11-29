@@ -15,8 +15,17 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 
 import { debounce } from "lodash";
-import { useRecoilState, useRecoilValueLoadable } from "recoil";
-import { currentTrackState, userSaveTrackSelector } from "../RecoilState";
+import {
+  useRecoilState,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
+import {
+  currentListTrackState,
+  currentTrackState,
+  isPlayingState,
+  userSaveTrackSelector,
+} from "../RecoilState";
 import SongItem from "../components/SongItem";
 import { SpotifyTrackItem, Track } from "../stores/types/SpotifyTrack.type";
 
@@ -26,6 +35,8 @@ const LikedSongsScreen = () => {
   const [searchedTracks, setSearchedTracks] = useState<Track[]>([]);
   const [input, setInput] = useState("");
   const savedTracks = useRecoilValueLoadable(userSaveTrackSelector);
+  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState);
+  const setCurrentListTracks = useSetRecoilState(currentListTrackState);
 
   useEffect(() => {
     if (savedTracks.state === "hasValue") {
@@ -59,113 +70,67 @@ const LikedSongsScreen = () => {
   };
 
   const playTrack = async () => {
-    if (savedTracks.contents?.length > 0) {
-      setCurrentTrack(savedTracks.contents[0]);
+    if (
+      savedTracks.state === "hasValue" &&
+      savedTracks?.contents?.items &&
+      savedTracks.contents.items.length > 0
+    ) {
+      setCurrentTrack(savedTracks.contents.items[0].track);
+      setCurrentListTracks(savedTracks.contents.items);
     }
   };
   return (
     <>
       <LinearGradient colors={["#614385", "#516395"]} style={{ flex: 1 }}>
         <ScrollView className="flex mt-12 p-3">
-          <Pressable onPress={() => navigation.goBack()} className="flex ml-4">
+          <Pressable onPress={() => navigation.goBack()} className="flex mb-5">
             <Ionicons name="arrow-back" size={24} color="white" />
           </Pressable>
 
-          <Pressable
-            style={{
-              marginHorizontal: 10,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginTop: 9,
-            }}
-          >
-            <Pressable
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                backgroundColor: "#42275a",
-                padding: 9,
-                flex: 1,
-                borderRadius: 3,
-                height: 38,
-              }}
-            >
-              <AntDesign name="search1" size={20} color="white" />
-              <TextInput
-                value={input}
-                onChangeText={(text) => handleInputChange(text)}
-                placeholder="Find in Liked songs"
-                placeholderTextColor={"white"}
-                style={{ fontWeight: "500", color: "white" }}
-              />
-            </Pressable>
-
-            <Pressable
-              style={{
-                marginHorizontal: 10,
-                backgroundColor: "#42275a",
-                padding: 10,
-                borderRadius: 3,
-                height: 38,
-              }}
-            >
-              <Text style={{ color: "white" }}>Sort</Text>
-            </Pressable>
-          </Pressable>
+          <View className="flex-row items-center rounded-lg h-12 bg-[#42275a] py-1 px-3">
+            <AntDesign name="search1" size={20} color="white" />
+            <TextInput
+              value={input}
+              onChangeText={(text) => handleInputChange(text)}
+              placeholder="Search"
+              placeholderTextColor="white"
+              className="text-white h-full ml-5 items-center"
+            />
+          </View>
 
           <View style={{ height: 50 }} />
-          <View style={{ marginHorizontal: 10 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold", color: "white" }}>
-              Liked Songs
+          <View className="mx-3">
+            <Text className="text-white text-3xl font-bold">
+              Bài hát yêu thích
             </Text>
-            <Text style={{ color: "white", fontSize: 13, marginTop: 5 }}>
-              430 songs
+            <Text className="text-white mt-2">
+              {savedTracks.contents?.total} bài hát
             </Text>
           </View>
 
-          <Pressable
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginHorizontal: 10,
-            }}
-          >
-            <Pressable
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 15,
-                backgroundColor: "#1DB954",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+          <Pressable className="flex-row justify-between items-center mx-3">
+            <Pressable className="w-10 h-10 rounded-full bg-[#1DB954] flex items-center justify-center">
               <AntDesign name="arrowdown" size={20} color="white" />
             </Pressable>
 
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
-            >
+            <View className="flex-row items-center gap-3">
               <MaterialCommunityIcons
                 name="cross-bolnisi"
                 size={24}
                 color="#1DB954"
               />
               <Pressable
-                onPress={playTrack}
-                style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "#1DB954",
+                onPress={() => {
+                  setIsPlaying(!isPlaying);
+                  playTrack();
                 }}
+                className="flex items-center justify-center bg-[#1DB954] w-16 h-16 rounded-full"
               >
-                <Entypo name="controller-play" size={24} color="white" />
+                {isPlaying ? (
+                  <Entypo name="controller-paus" size={24} color="white" />
+                ) : (
+                  <Entypo name="controller-play" size={24} color="white" />
+                )}
               </Pressable>
             </View>
           </Pressable>
@@ -173,15 +138,21 @@ const LikedSongsScreen = () => {
           {savedTracks.state === "loading" ? (
             <ActivityIndicator size="large" color="gray" />
           ) : (
-            searchedTracks &&
-            searchedTracks?.map((item: Track, index: number) => (
-              <SongItem
-                key={index}
-                item={item}
-                isPlaying={currentTrack?.id === item.id}
-                onPress={(item: any) => setCurrentTrack(item)}
-              />
-            ))
+            <View>
+              {searchedTracks &&
+                searchedTracks?.map((item: Track, index: number) => (
+                  <SongItem
+                    key={index}
+                    item={item}
+                    isPlaying={currentTrack?.id === item.id}
+                    onPress={(item: Track) => {
+                      setCurrentTrack(item);
+                      setCurrentListTracks(savedTracks.contents?.items);
+                    }}
+                  />
+                ))}
+              <View className="h-24" />
+            </View>
           )}
         </ScrollView>
       </LinearGradient>

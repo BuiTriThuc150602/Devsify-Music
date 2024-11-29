@@ -135,4 +135,24 @@ export class PlaylistController {
       throw error;
     }
   }
+
+  public async getRecentlyPlayedSongs(req: Request): Promise<SpotifyPlaylist> {
+    try {
+      const accessToken = req.headers.authorization;
+      const limit = req.query.limit as string;
+      if (!accessToken) {
+        const error: CustomError = new Error("Parameter missing");
+        error.status = 400;
+        error.message = "Unauthorized, token not found";
+        throw error;
+      }
+      const playlist = await this.playlistService.getRecentlyPlayedSongs(
+        accessToken,
+        parseInt(limit)
+      );
+      return playlist;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

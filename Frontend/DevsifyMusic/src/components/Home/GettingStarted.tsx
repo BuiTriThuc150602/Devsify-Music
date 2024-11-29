@@ -1,73 +1,72 @@
-import { View, Text, Image, FlatList, ImageBackground, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import React from "react";
+import {
+  useRecoilState,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from "recoil";
+import {
+  currentListTrackState,
+  currentTrackState,
+  isPlayingState,
+  recentlyPlayedSongsSelector,
+} from "@/src/RecoilState";
+import { SpotifyTrackItem } from "@/src/stores/types/SpotifyTrack.type";
 
 const GettingStarted = () => {
-  const data = [
-    {
-      id: 1,
-      title: "Tuyển tập Phan Mạnh Quỳnh",
-      image:
-        "https://vcdn1-giaitri.vnecdn.net/2020/03/01/phanmanhquynh-1583003838-8319-1583006179.jpg?w=500&h=300&q=100&dpr=2&fit=crop&s=UZbSDZGKO62-xYejcoFvVg",
-      description: "Phan Mạnh Quỳnh cùng những ca khúc hay nhất",
-    },
-    {
-      id: 2,
-      title: "Tuyển tập Hùng Quân",
-      image: "https://i.scdn.co/image/ab6761610000e5eb25e45d406464cd9c46ed3034",
-      description: "Hùng Quân cùng những ca khúc hay nhất",
-    },
-    {
-      id: 3,
-      title: "Mr. Siro",
-      image:
-        "https://2sao.vietnamnetjsc.vn/images/2018/07/16/10/51/mr-siro-3.jpg",
-      description: "Mr. Siro cùng những ca khúc hay nhất",
-    },
-    {
-      id: 4,
-      title: "Tuyển tập Bích Phương",
-      image:
-        "https://vcdn1-giaitri.vnecdn.net/2020/03/01/phanmanhquynh-1583003838-8319-1583006179.jpg?w=500&h=300&q=100&dpr=2&fit=crop&s=UZbSDZGKO62-xYejcoFvVg",
-      description: "Bích Phương cùng những ca khúc hay nhất",
-    },
-    {
-      id: 5,
-      title: "Tuyển tập Hương Tràm",
-      image: "https://i.scdn.co/image/ab6761610000e5eb25e45d406464cd9c46ed3034",
-      description: "Hương Tràm cùng những ca khúc hay nhất",
-    },
-    {
-      id: 6,
-      title: "Sơn Tùng M-TP",
-      image:
-        "https://2sao.vietnamnetjsc.vn/images/2018/07/16/10/51/mr-siro-3.jpg",
-      description: "Sơn Tùng M-TP cùng những ca khúc hay nhất",
-    },
-  ];
+  const recentlyplayed = useRecoilValueLoadable(recentlyPlayedSongsSelector(6));
+  const setCurrentTrack = useSetRecoilState(currentTrackState);
+  const setIsPlaying = useSetRecoilState(isPlayingState);
+  const setCurrentListTracks = useSetRecoilState(currentListTrackState);
 
   return (
     <View className="my-5">
       <Text className="text-white text-3xl font-bold my-3">
-        Getting Started
+        Bắt đầu ngày mới với âm nhạc
       </Text>
-      <FlatList
-        data={data}
-        // keyExtractor={(item) => item.id}
-        horizontal
-        renderItem={({ item }) => (
-          <Pressable className="flex relative w-40 h-50 mr-5 rounded-lg">
-            <ImageBackground
-              source={{ uri: item.image }}
-              className="w-40 h-40"
-            >
-              <Text className="text-white absolute bottom-1 left-2 text-2xl font-bold leading-10 w-[70%]">
-                {item.title}
-              </Text>
-            </ImageBackground>
-            <Text className="text-gray-400 py-2">{item.description}</Text>
-          </Pressable>
-        )}
-      />
+
+      {recentlyplayed.state === "loading" ? (
+        <ActivityIndicator size="large" color="#00ff00" />
+      ) : (
+        <View className="flex flex-row flex-wrap justify-between">
+          {recentlyplayed.state === "hasValue" &&
+            recentlyplayed.contents?.items.map(
+              (item: SpotifyTrackItem, index: any) => (
+                <Pressable
+                  onPress={() => {
+                    if (recentlyplayed.contents?.items) {
+                      setCurrentTrack(item.track);
+                      setIsPlaying(true);
+                      setCurrentListTracks(recentlyplayed.contents.items);
+                    }
+                  }}
+                  key={index}
+                  className="p-2 rounded-lg flex flex-row w-[48%]"
+                >
+                  <Image
+                    className="w-16 h-16 rounded-lg"
+                    source={{ uri: item.track.album.images[0].url }}
+                  />
+                  <View className="mt-2 ml-3">
+                    <Text className="text-white font-bold mb-2">
+                      {item?.track?.name}
+                    </Text>
+                    <Text className="text-gray-400">
+                      {item.track.artists[0].name}
+                    </Text>
+                  </View>
+                </Pressable>
+              )
+            )}
+        </View>
+      )}
     </View>
   );
 };

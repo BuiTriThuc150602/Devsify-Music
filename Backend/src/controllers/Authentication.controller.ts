@@ -14,9 +14,9 @@ export class AuthentiactionController {
   }
   async getAuth(req: Request, resp: Response) {
     try {
-      const { code, state, idToken } = req.body;
+      const { code, state, idToken, redirect_uri } = req.body;
       console.log("Params", { code, state, idToken });
-      const result = await this.authService.getAuth(code, state, idToken);
+      const result = await this.authService.getAuth(code, state, idToken, redirect_uri);
       return result;
     } catch (error) {
       console.error(error);

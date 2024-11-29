@@ -32,4 +32,11 @@ export const PlaylistRoutes = [
     controller: PlaylistController,
     action: "getUserTopItems",
   },
+
+  {
+    method: "get",
+    route: "/spotify-me/recently-played",
+    controller: PlaylistController,
+    action: "getRecentlyPlayedSongs",
+  },
 ];

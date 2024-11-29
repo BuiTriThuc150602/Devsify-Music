@@ -1,12 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { atom, selector } from "recoil";
+import { atom, selector, selectorFamily } from "recoil";
 import { Authentication } from "../stores/types/AuthContext.type";
 import { ProfileAPI } from "../api/Profile.service";
-import { SpotifyUser } from "../stores/types/SpotifyUser.type";
+import { SpotifyArtist, SpotifyUser } from "../stores/types/SpotifyUser.type";
 import { SpotifyPlaylist } from "../stores/types/SpotifyPlaylist.type";
 import { getAuthenticationFromStorage } from "../utils/AsyncStorage.util";
 import { TrackAPI } from "../api/Track.service";
-import { SpotifyTrack, Track } from "../stores/types/SpotifyTrack.type";
+import { SpotifyTrack, SpotifyTrackItem, Track } from "../stores/types/SpotifyTrack.type";
 import { Sound } from "expo-av/build/Audio";
 
 const profileApi = new ProfileAPI();
@@ -68,6 +68,35 @@ export const userSaveTrackSelector = selector<SpotifyTrack | null>({
       const tracks =  await trackApi.getUserSavedTracks();
       return tracks;
       
+    }
+    return null;
+  },
+});
+
+export const currentListTrackState = atom<SpotifyTrackItem[] | null>({
+  key: "currentListTrackStateKey",
+  default: null,
+});
+
+export const recentlyPlayedSongsSelector = selectorFamily<SpotifyTrack | null, number>({
+  key: "recentlyPlayedSongsSelectorKey",
+  get:(limit) => async ({ get }) => {
+    const authentication = get(authenticationState);
+    if (authentication && authentication.access_token) {
+      const tracks = await trackApi.getRecentlyPlayedSongs(limit);
+      return tracks;
+    }
+    return null;
+  },
+});
+
+export const getUserTopItems = selectorFamily<SpotifyTrack[] | SpotifyArtist[] | null, string>({
+  key: "getUserTopItemsKey",
+  get: (type) => async ({ get }) => {
+    const authentication = get(authenticationState);
+    if (authentication && authentication.access_token) {
+      const tracks = await trackApi.getUserTopItems(type);
+      return tracks;
     }
     return null;
   },

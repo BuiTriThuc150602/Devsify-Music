@@ -13,4 +13,23 @@ export const TrackRoutes = [
     controller: TrackController,
     action: "getUserSavedTracks",
   },
+  {
+    method: "get",
+    route: "/replace/tracks/:name",
+    controller: TrackController,
+    action: "getAudioRepalce",
+  },
+  {
+    method: "get",
+    route: "/spotify-me/artists/:artist_id/top-tracks",
+    controller: TrackController,
+    action: "getArtistTopTracks",
+  },
+
+  {
+    method: "get",
+    route: "/spotify-me/search",
+    controller: TrackController,
+    action: "search",
+  },
 ];

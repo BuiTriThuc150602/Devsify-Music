@@ -15,7 +15,7 @@ export class AuthenticationService {
     this.api = AxiosConfig;
   }
 
-  async getAuth(code: string, state: string, idToken: string) {
+  async getAuth(code: string, state: string, idToken: string, redirect_uri: string) {
     try {
       const auth: Authentication = this.cache.get("auth");
       console.log("Get Auth from cache", auth);
@@ -29,7 +29,7 @@ export class AuthenticationService {
         if (state === null || code === null) {
           throw new Error("Invalid state or code");
         } else {
-          const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
+          // const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
           var authOptions = {
             url: process.env.SPOTIFY_ACCOUNTS_URL,
             form: {

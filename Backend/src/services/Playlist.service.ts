@@ -104,4 +104,20 @@ export class PlaylistService {
       throw error;
     }
   }
+
+  public async getRecentlyPlayedSongs(
+    accessToken: string,
+    limit: number
+  ): Promise<SpotifyPlaylist> {
+    try {
+      const response = await this.api.get(`/me/player/recently-played?limit=${limit}`, {
+        headers: {
+          Authorization: accessToken,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
